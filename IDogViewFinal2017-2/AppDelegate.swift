@@ -13,10 +13,26 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var plistPathInDocument: String = String()
 
-
+    func preparePlistForUse() {
+        let rootpath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, .userDomainMask, true)[0]
+        
+        plistPathInDocument = rootpath + "/myPropertiListFile.plist"
+        
+        if !FileManager.default.fileExists(atPath: plistPathInDocument){
+            let plistPathInBundle = Bundle.main.path(forResource: "MyPropertiListFile", ofType: "plist") as String?
+            do{
+                try FileManager.default.copyItem(atPath: plistPathInBundle!, toPath: plistPathInDocument)
+            }catch{
+                print(error)
+            }
+        }
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        preparePlistForUse()
         return true
     }
 
@@ -36,6 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        preparePlistForUse()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
