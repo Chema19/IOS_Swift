@@ -59,7 +59,7 @@ class IDogViewStore {
         url = can.url
         uploadedAt = can.time
         //Converto date() to String()
-        
+        createdAt = can.time
         
         do{
             try id?.write(toFile: pathForThePlistFile, atomically: true, encoding: String.Encoding.utf8)
@@ -74,7 +74,6 @@ class IDogViewStore {
     
     //Read a property list file
     func findFavoriteById(for can: Can) {
-        
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
         let documentDirectory = paths[0] as! String
         let path = documentDirectory.appending("myPropertiListFile.plist")
@@ -96,6 +95,7 @@ class IDogViewStore {
             print("exits at path")
         }
         
+        //parte donde se lee
         let resultDictionary = NSMutableDictionary(contentsOfFile: path)
         print("load .plist is -> \(String(describing: resultDictionary?.description))")
         
@@ -110,6 +110,17 @@ class IDogViewStore {
         }
     }
     
+    func findAllFavorites() -> [NSManagedObject]? {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Favorite")
+        do {
+            let result = try context.fetch(request)
+            return result as? [NSManagedObject]
+        } catch let error {
+            print("Query Error: \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
     func isFavorite(can: Can) -> Bool {
         return findFavoriteById(for: can) != nil
     }
@@ -122,5 +133,18 @@ class IDogViewStore {
         setFavorite(false, for: can)
     }
     
+    func favoriteSourceIdsAsString() -> String {
+        let favorites = findAllFavorites()
+        
+        if let favorites = favorites {
+            print("All Favorites Count: \(favorites.count)")
+            return favorites
+                .map({ $0.value(forKey: "sourceId") as! String})
+                .filter({ !$0.isEmpty })
+                .prefix(20)
+                .joined(separator: ",")
+        }
+        return ""
+    }
     
 }

@@ -41,11 +41,11 @@ class Can {
     
     func isFavorite() -> Bool {
         let store = IDogViewStore()
-        return store
+        return store.isFavorite(can: self)
     }
     func setFavorite(isFavorite: Bool){
         let store = IDogViewStore()
-        store
+        store.setFavorite(isFavorite, for: self)
     }
     
     class func buildAll(from jsonCanes: [JSON]) -> [Can] {

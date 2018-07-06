@@ -32,8 +32,26 @@ class CanViewController: UIViewController {
             if let url = URL(string: can.url){
                 photoImageView.af_setImage(withURL: url)
             }
+            isFavorite = can.isFavorite()
+            setFavoriteImage()
         }
         // Do any additional setup after loading the view.
+    }
+    
+    
+    func toggleFavorite() {
+        isFavorite = !isFavorite
+        if let can = can {
+            can.setFavorite(isFavorite: isFavorite)
+            let store = IDogViewStore()
+            print("Favorites: \(store.favoriteSourceIdsAsString())")
+        }
+        setFavoriteImage()
+    }
+    
+    func setFavoriteImage() {
+        let name = isFavorite ? "unFavorite" : "Favorite"
+        favoriteButton.setImage(UIImage(named: name), for: .normal)
     }
     /*
     // MARK: - Navigation
@@ -46,6 +64,10 @@ class CanViewController: UIViewController {
     */
     @IBAction func doneAction(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func favoriteAction(_ sender: Any) {
+        toggleFavorite()
     }
     
 }
